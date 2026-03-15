@@ -261,26 +261,42 @@ int countNullChildrenIterative(N* subtreeRoot) {
   // Return the sum.
   return nullChildrenSum;
 }
+#include <queue> // Ensure you include queue for this exercise
 
-/*******************************************************************
-  EXERCISE 2: Implement level-order traversal in the traverseLevels function.
+template <typename T>
+std::vector<T> traverseLevels(GenericTree<T>& tree) {
+  using TreeNode = typename GenericTree<T>::TreeNode;
+  std::vector<T> results;
 
-  As discussed above, a level-order traversal is related to the idea of a
-  breadth-first traversal. You need to implement the traverseLevels function,
-  which takes a tree as input and performs a level-order traversal. Traverse
-  the tree one layer at a time, visiting child nodes from left to right, while
-  storing copies of the node data in level order as a std::vector. If a null
-  child pointer is encountered, no data item should be appended to the results
-  for that one pointer. The function should return the std::vector of result
-  data in the appropriate order.
+  auto rootNodePtr = tree.getRootPtr();
+  if (!rootNodePtr) return results;
 
-  You may implement the body of the function however you want, but you must
-  not leak any memory or crash, and your function should work for any
-  simple instance of GenericTree<T> (such as GenericTree<int> or
-  GenericTree<std::string>). You'll find several good strategies for building
-  the function throughout the source files provided with this assignment.
+  // Use a queue to manage the nodes for Breadth-First Search (Level-Order)
+  std::queue<TreeNode*> nodesToVisit;
+  nodesToVisit.push(rootNodePtr);
 
-  ****************************************************************/
+  while (!nodesToVisit.empty()) {
+    // Get the front node and remove it from the queue
+    TreeNode* current = nodesToVisit.front();
+    nodesToVisit.pop();
+
+    // Safety check for null pointers
+    if (current != nullptr) {
+      // Record the data
+      results.push_back(current->data);
+
+      // Add all children of the current node to the queue
+      for (auto childPtr : current->childrenPtrs) {
+        if (childPtr != nullptr) {
+          nodesToVisit.push(childPtr);
+        }
+      }
+    }
+  }
+
+  return results;
+}
+
 
 // traverseLevels: Performs a level-order traversal of the input tree
 // and records copies of the data found, in order, in a std::vector,
